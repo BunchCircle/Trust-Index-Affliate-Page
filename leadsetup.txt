@@ -1,0 +1,62 @@
+TRUSTINDEX LEAD COLLECTION: BACKEND SETUP INSTRUCTIONS
+======================================================
+
+Follow these steps to activate the Google Sheets backend for your lead generation landing page.
+
+STEP 1: PREPARE THE GOOGLE SHEET
+--------------------------------
+1. Go to sheets.google.com and create a new Spreadsheet.
+2. Name it "Trustindex Leads" (or anything you prefer).
+3. The backend is configured to store the Email ID in Column A (the first column).
+
+STEP 2: DEPLOY THE BACKEND SCRIPT
+---------------------------------
+1. Inside your Google Sheet, go to "Extensions" > "Apps Script".
+2. Delete any code in the editor and paste the contents of `google-apps-script.js`.
+3. Click the "Save" icon and name the project "LeadBackend".
+4. Click the "Deploy" button > "New deployment".
+5. Select "Web app" as the deployment type.
+6. Set the following settings:
+   - Description: "Trustindex Lead API"
+   - Execute as: "Me"
+   - Who has access: "Anyone" (This allows the frontend to send data without complex OAuth).
+7. Click "Deploy". You may be asked to authorize the script.
+8. COPY the "Web App URL" provided. It will look like: 
+   https://script.google.com/macros/s/AKfycb.../exec
+
+STEP 3: FRONTEND INTEGRATION (MANUAL STEP)
+------------------------------------------
+Per your strict requirement that the frontend files remain unchanged in this delivery, you will need to manually add the following integration logic to your existing React handlers.
+
+Add this helper function to your `App.tsx`:
+
+```javascript
+const submitLeadToBackend = async (email) => {
+  const SCRIPT_URL = "YOUR_DEPLOYED_WEB_APP_URL_HERE";
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors", // Required for Google Apps Script Web Apps
+      cache: "no-cache",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email })
+    });
+  } catch (error) {
+    console.error("Lead submission failed:", error);
+  }
+};
+```
+
+Update your handlers:
+1. In `AIChatbot.tsx` -> `handleLeadSubmit`: Call `submitLeadToBackend(leadForm.email)`.
+2. In `RedirectLeadModal` -> `onSubmit`: Call `submitLeadToBackend(email)`.
+3. In `LeadMagnetModal` -> `onSubmit`: Call `submitLeadToBackend(email)`.
+
+SECURITY NOTE:
+--------------
+Google Apps Script Web Apps handle the storage securely. The data is validated server-side before being written to the sheet. 
+
+COLUMN MAPPING:
+---------------
+Column A: Email ID
+Column B: Timestamp of capture
