@@ -3,7 +3,7 @@ import { CheckCircle, AlertTriangle, Zap, ShieldCheck, ArrowRight, Award, Chevro
 import { GoogleGenAI } from "@google/genai";
 
 // --- Constants ---
-const AFFILIATE_LINK = "https://www.trustindex.io/?ref=YOUR_AFFILIATE_ID";
+const AFFILIATE_LINK = "https://www.trustindex.io/ti-redirect.php?a=andaman&c=my_campaign";
 const VIDEO_PLACEHOLDER_URL = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1280&auto-format&fit=crop";
 const PROFILE_PIC_URL = "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=256&auto-format&fit=crop";
 
