@@ -1,45 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The #1 Hack to Increase Website Conversions | Trustindex</title>
+    <title>The #1 Hack to Increase Website Conversions | Trustindx</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <style>
         :root {
             font-family: 'Inter', sans-serif;
         }
+
         @supports (font-variation-settings: normal) {
             :root {
                 font-family: 'Inter var', sans-serif;
             }
         }
+
         body {
             background-color: #FBF9F6;
             font-family: 'Inter', sans-serif;
         }
+
         @keyframes pulse-custom {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(25, 143, 101, 0.7); }
-            50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(25, 143, 101, 0); }
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(25, 143, 101, 0.7);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 20px 10px rgba(25, 143, 101, 0);
+            }
         }
+
         .animate-pulse-custom {
             animation: pulse-custom 2s infinite;
         }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "@google/genai": "https://esm.sh/@google/genai@^1.38.0"
-  }
-}
-</script>
 </head>
+
 <body class="text-gray-900 overflow-x-hidden">
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>
