@@ -73,7 +73,7 @@ const TrustNotification = () => {
       </div>
       <div>
         <p className="text-sm font-bold text-gray-900">{data.name} from {data.location}</p>
-        <p className="text-xs text-gray-500 font-semibold uppercase tracking-tight">Activated Trustindx 4m ago</p>
+        <p className="text-xs text-gray-500 font-semibold uppercase tracking-tight">Activated Trustindex 4m ago</p>
       </div>
     </div>
   );
@@ -127,7 +127,7 @@ const AIChatbot = () => {
           HUMAN-LIKE RULES:
           1. Use the user's first name naturally.
           2. Focus on local business pain: competitors taking customers, Yelp/Google bad reviews, the 'ghost town' website effect.
-          3. Emphasize that Trustindx handles the 'tech' so they can focus on their business.
+          3. Emphasize that Trustindex handles the 'tech' so they can focus on their business.
           4. Always lead them toward starting their free trial at ${AFFILIATE_LINK}.
           5. Keep responses under 3-4 sentences. Talk like a local consultant.`,
           temperature: 0.8,
@@ -286,7 +286,7 @@ const RedirectLeadModal: React.FC<{ isOpen: boolean, onClose: () => void, onSucc
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tighter">Secure Your Reputation</h2>
           <p className="text-xl text-gray-500 mb-12 leading-relaxed font-semibold">
-            Enter your business email to unlock your local conversion boost and head over to Trustindx.
+            Enter your business email to unlock your local conversion boost and head over to Trustindex.
           </p>
           <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); submitLeadToBackend(email); onSuccess(); }}>
             <div className="relative group">
@@ -400,7 +400,7 @@ const App: React.FC = () => {
         </h1>
 
         <p className="text-lg md:text-xl text-gray-500 max-w-3xl mx-auto mb-12 leading-relaxed font-semibold">
-          If you don’t have consistent 5-star proof, customers move on. Automatically collect reviews, manage negative feedback, and <span className="text-gray-900 font-bold italic underline">secure your local reputation</span> with Trustindx.
+          If you don’t have consistent 5-star proof, customers move on. Automatically collect reviews, manage negative feedback, and <span className="text-gray-900 font-bold italic underline">secure your local reputation</span> with Trustindex.
         </p>
 
         <div className="flex flex-col items-center space-y-8 mb-24">
@@ -490,7 +490,7 @@ const App: React.FC = () => {
           </div>
 
           <div className="bg-[#198F65] rounded-3xl p-12 shadow-[0_40px_100px_-20px_rgba(25,143,101,0.3)] relative overflow-hidden group hover:scale-[1.02] transition-transform duration-500">
-            <div className="absolute top-0 right-0 bg-white text-[#198F65] px-8 py-3 rounded-bl-2xl font-black text-xs uppercase tracking-widest shadow-xl">Trustindx Active</div>
+            <div className="absolute top-0 right-0 bg-white text-[#198F65] px-8 py-3 rounded-bl-2xl font-black text-xs uppercase tracking-widest shadow-xl">Trustindex Active</div>
             <div className="space-y-10">
               <div className="h-8 w-3/4 bg-green-400/30 rounded-full"></div>
               <div className="h-56 w-full bg-white/10 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center p-10 border border-white/20 shadow-inner">
@@ -547,7 +547,7 @@ const App: React.FC = () => {
             <span className="text-[#198F65] font-black text-xs uppercase tracking-[0.4em] mb-4 block">The Set-and-Forget Standard</span>
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight mb-8">Why Every Business Must Use It</h2>
             <p className="text-lg text-gray-500 mb-8 leading-relaxed font-semibold">
-              Reputation management used to be a full-time job. With Trustindx, it's a <strong>2-minute initial setup</strong>. After that, the software works automatically with <span className="text-gray-900 font-black">minimal to no human intervention.</span>
+              Reputation management used to be a full-time job. With Trustindex, it's a <strong>2-minute initial setup</strong>. After that, the software works automatically with <span className="text-gray-900 font-black">minimal to no human intervention.</span>
             </p>
 
             {/* Vertical Checkbox Style List */}
@@ -609,7 +609,7 @@ const App: React.FC = () => {
       <Section className="bg-transparent">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight">The 3-Step Trust Loop</h2>
-          <p className="text-lg text-gray-500 mt-6 font-semibold italic">How Trustindx scales your authority on autopilot.</p>
+          <p className="text-lg text-gray-500 mt-6 font-semibold italic">How Trustindex scales your authority on autopilot.</p>
         </div>
         <div className="grid md:grid-cols-3 gap-20 relative">
           <div className="hidden md:block absolute top-20 left-0 w-full h-1 bg-green-50 -z-10"></div>
@@ -697,7 +697,7 @@ const App: React.FC = () => {
             </div>
             <h3 className="text-3xl md:text-5xl font-black text-gray-900 mb-8 leading-tight tracking-tighter">"Online reputation is <br />the new digital currency."</h3>
             <p className="text-lg md:text-xl text-gray-500 italic mb-10 leading-relaxed font-semibold">
-              "Local business owners spend thousands on ads, but ignore their reviews. That's like pouring water into a leaky bucket. Trustindx seals that bucket. It builds instant rapport before you even pick up the phone. It's the highest ROI tool in your stack."
+              "Local business owners spend thousands on ads, but ignore their reviews. That's like pouring water into a leaky bucket. Trustindex seals that bucket. It builds instant rapport before you even pick up the phone. It's the highest ROI tool in your stack."
             </p>
             <div className="flex items-center space-x-6">
               <div className="w-16 h-1 bg-[#198F65]"></div>
@@ -716,10 +716,10 @@ const App: React.FC = () => {
           </div>
           <div className="space-y-8">
             {[
-              { q: "How do I deal with fake reviews from competitors?", a: "Trustindx includes a dedicated toolkit for identifying and reporting fake reviews. We guide you through the exact process to flag content that violates platform terms, increasing your success rate in getting them removed." },
+              { q: "How do I deal with fake reviews from competitors?", a: "Trustindex includes a dedicated toolkit for identifying and reporting fake reviews. We guide you through the exact process to flag content that violates platform terms, increasing your success rate in getting them removed." },
               { q: "Will this help my Google Maps ranking?", a: "Yes. Review frequency, quantity, and star rating are core factors in Google's local algorithm. By automating review collection, you increase your 'activity' score, which helps push you higher in the local 3-pack." },
               { q: "Can I manage everything from my phone?", a: "Absolutely. Our dashboard is fully responsive. You can respond to negative reviews instantly while on the job, showing customers you're proactive and professional." },
-              { q: "Do I need to give my login details to Trustindx?", a: "No. We use secure API connections and public feed aggregators. You maintain full control over your accounts while we pull and push data to keep your website widgets fresh." }
+              { q: "Do I need to give my login details to Trustindex?", a: "No. We use secure API connections and public feed aggregators. You maintain full control over your accounts while we pull and push data to keep your website widgets fresh." }
             ].map((item, i) => (
               <div key={i} className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-green-100 transition-all">
                 <button onClick={() => toggleFaq(i)} className="w-full p-10 md:p-12 flex items-center justify-between text-left group">
@@ -767,7 +767,7 @@ const App: React.FC = () => {
           </div>
           <p className="text-gray-500 text-base max-w-3xl mx-auto mb-20 leading-relaxed font-semibold">
             <span className="font-black text-gray-400 uppercase tracking-widest text-sm block mb-6">Disclosure:</span>
-            This landing page is designed to showcase the benefits of Trustindx. We are an independent partner and may earn a commission if you sign up using our link. We only endorse tools that provide measurable business growth for our clients.
+            This landing page is designed to showcase the benefits of Trustindex. We are an independent partner and may earn a commission if you sign up using our link. We only endorse tools that provide measurable business growth for our clients.
           </p>
           <div className="flex justify-center flex-wrap gap-12 text-xs font-black uppercase tracking-[0.5em] text-gray-600 mb-20">
             <a href="#" className="hover:text-[#198F65] transition-colors">Privacy Policy</a>
