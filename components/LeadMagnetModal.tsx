@@ -58,7 +58,7 @@ const LeadMagnetModal: React.FC<{ isOpen: boolean, onClose: () => void, onConver
                         </div>
                         <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter uppercase leading-tight">ALMOST DONE!</h2>
                         <p className="text-lg text-gray-500 font-bold mb-8 px-4">
-                            Your <span className="font-bold text-[#198F65]">Reputation Shield Guide</span> will be sent within 2 minutes.
+                            Your <span className="font-bold text-[#198F65]">Reputation Shield Guide</span> will be sent within 15 minutes.
                         </p>
                         <button
                             onClick={() => {
