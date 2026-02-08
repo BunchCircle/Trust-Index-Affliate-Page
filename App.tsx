@@ -125,7 +125,9 @@ const App: React.FC = () => {
 
           {/* Main Image Container */}
           <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden border-[8px] border-white ring-1 ring-gray-100 transform group-hover:translate-y-[-5px] transition-transform duration-700">
-            <img src={VIDEO_PLACEHOLDER_URL} alt="Reputation Dashboard" className="w-full opacity-100" loading="eager" />
+            <a href={AFFILIATE_LINK} target="_blank" rel="noopener noreferrer">
+              <img src={VIDEO_PLACEHOLDER_URL} alt="Reputation Dashboard" className="w-full opacity-100 cursor-pointer" loading="eager" />
+            </a>
           </div>
 
           {/* Feature Card Below Image */}
