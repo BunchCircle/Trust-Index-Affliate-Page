@@ -1,317 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle, AlertTriangle, Zap, ShieldCheck, ArrowRight, Award, ChevronDown, Star, X, Mail, Phone, MessageSquare, TrendingUp, XCircle, MousePointer2, Settings2, Rocket, Clock, Database, Globe, Download, Eye, FileText, Send, User, Bot, Loader2, Sparkles, RefreshCcw } from 'lucide-react';
-import { GoogleGenAI } from "@google/genai";
+import React, { useState, useEffect, useRef, Suspense } from 'react';
+import { CheckCircle, AlertTriangle, Zap, ArrowRight, Award, ChevronDown, Star, XCircle, Settings2, Rocket, Clock, Database, Download, FileText, Sparkles, RefreshCcw, TrendingUp, ShieldCheck, MessageSquare } from 'lucide-react';
 
-// --- Constants ---
-const AFFILIATE_LINK = "https://www.trustindex.io/ti-redirect.php?a=andaman&c=my_campaign";
-const VIDEO_PLACEHOLDER_URL = "/trust-revenue.jpg";
-const PROFILE_PIC_URL = "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=256&auto-format&fit=crop";
+// --- Imports ---
+import { AFFILIATE_LINK, VIDEO_PLACEHOLDER_URL, PROFILE_PIC_URL, LOGO_MARQUEE, submitLeadToBackend } from './utils/api';
+import { Section, PrimaryButton } from './components/UIComponents';
 
-const LOGO_MARQUEE = ["Google", "Facebook", "Yelp", "Amazon", "G2", "Tripadvisor", "Trustpilot", "App Store", "Booking.com", "Capterra"];
-
-// --- Backend Integration Helper ---
-const submitLeadToBackend = async (email: string) => {
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSIdLPXef1_-W-rOWjeoV_Akva5HLnxX4a85X8LteKYs3VMeH5f-PuXy9t19rirX4i/exec";
-  try {
-    await fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors", // Required for Google Apps Script Web Apps
-      cache: "no-cache",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email })
-    });
-  } catch (error) {
-    console.error("Lead submission failed:", error);
-  }
-};
-
-// --- Sub-components ---
-const Section = ({ children, className = "", id = "" }: React.PropsWithChildren<{ className?: string, id?: string }>) => (
-  <section id={id} className={`py-16 px-4 md:py-24 ${className}`}>
-    <div className="max-w-6xl mx-auto">
-      {children}
-    </div>
-  </section>
-);
-
-const PrimaryButton = ({ onClick, children, pulse = false, className = "" }: React.PropsWithChildren<{ onClick?: () => void, pulse?: boolean, className?: string }>) => (
-  <button
-    onClick={onClick}
-    className={`inline-flex items-center justify-center bg-[#198F65] hover:bg-[#147250] text-white font-extrabold text-base md:text-lg py-3 px-6 md:py-4 md:px-9 rounded-full transition-all duration-300 transform hover:scale-105 shadow-xl uppercase tracking-wider text-center ${className}`}
-  >
-    {children}
-    <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
-  </button>
-);
-
-const TrustNotification = () => {
-  const [visible, setVisible] = useState(false);
-  const [data, setData] = useState({ name: "Robert M.", location: "Texas" });
-
-  useEffect(() => {
-    const names = ["Robert M.", "Sarah K.", "James W.", "Elena R.", "David L."];
-    const locs = ["Texas", "London", "Sydney", "Berlin", "New York"];
-
-    const show = () => {
-      setData({
-        name: names[Math.floor(Math.random() * names.length)],
-        location: locs[Math.floor(Math.random() * locs.length)]
-      });
-      setVisible(true);
-      setTimeout(() => setVisible(false), 5000);
-    };
-
-    const interval = setInterval(show, 15000);
-    setTimeout(show, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className={`fixed bottom-4 left-4 z-[60] bg-white border border-gray-100 rounded-lg shadow-2xl p-4 flex items-center space-x-3 transition-all duration-500 transform ${visible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
-      <div className="bg-green-100 p-2 rounded-full">
-        <TrendingUp className="w-6 h-6 text-green-600" />
-      </div>
-      <div>
-        <p className="text-sm font-bold text-gray-900">{data.name} from {data.location}</p>
-        <p className="text-xs text-gray-500 font-semibold uppercase tracking-tight">Activated Trustindex 4m ago</p>
-      </div>
-    </div>
-  );
-};
-
-// --- AIChatbot Component ---
-const AIChatbot = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [leadInfo, setLeadInfo] = useState<{ name: string, email: string } | null>(null);
-  const [messages, setMessages] = useState<{ role: 'user' | 'bot', text: string }[]>([
-    { role: 'bot', text: "Hey! I'm Mark. Your local business reputation is either your best salesperson or your worst nightmare. Mind if I show you how to automate your 5-star proof in under 2 minutes?" }
-  ]);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [leadForm, setLeadForm] = useState({ name: '', email: '' });
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages, leadInfo, isLoading]);
-
-  const handleLeadSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (leadForm.name && leadForm.email) {
-      submitLeadToBackend(leadForm.email);
-      setLeadInfo(leadForm);
-      setMessages(prev => [...prev, { role: 'bot', text: `Great to meet you, ${leadForm.name.split(' ')[0]}! Reputation is everything for a local biz. Are you currently struggling with getting new reviews, or are you worried about a few bad ones dragging you down?` }]);
-    }
-  };
-
-  const handleSend = async () => {
-    if (!input.trim() || isLoading || !leadInfo) return;
-
-    const userMsg = input;
-    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
-    setInput("");
-    setIsLoading(true);
-
-    try {
-      // Fix: Always use process.env.API_KEY directly for initialization as per guidelines
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        // Fix: Simplify contents to a single prompt string for basic text tasks
-        contents: messages.map(m => `${m.role === 'bot' ? 'Assistant' : 'User'}: ${m.text}`).join('\n') + `\nUser: ${userMsg}`,
-        config: {
-          systemInstruction: `You are 'Mark', a local business growth specialist. The user's name is ${leadInfo.name}. 
-          
-          HUMAN-LIKE RULES:
-          1. Use the user's first name naturally.
-          2. Focus on local business pain: competitors taking customers, Yelp/Google bad reviews, the 'ghost town' website effect.
-          3. Emphasize that Trustindex handles the 'tech' so they can focus on their business.
-          4. Always lead them toward starting their free trial at ${AFFILIATE_LINK}.
-          5. Keep responses under 3-4 sentences. Talk like a local consultant.`,
-          temperature: 0.8,
-        }
-      });
-
-      const botText = response.text || `Honestly, every day without a solid review system is a day you're losing local customers. Check the setup here: ${AFFILIATE_LINK}`;
-      setMessages(prev => [...prev, { role: 'bot', text: botText }]);
-    } catch (error) {
-      console.error("AI Error:", error);
-      setMessages(prev => [...prev, { role: 'bot', text: `Reputation is non-negotiable. Grab your free plan here to secure your local ranking: ${AFFILIATE_LINK}` }]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="fixed bottom-6 right-6 z-[70] flex flex-col items-end">
-      {isOpen && (
-        <div className="mb-4 w-[350px] md:w-[420px] h-[650px] bg-white rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.4)] border border-gray-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-500">
-          <div className="bg-[#198F65] p-6 text-white flex items-center justify-between relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
-            <div className="flex items-center space-x-4 relative">
-              <div className="relative">
-                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-[#198F65] shadow-lg">
-                  <User className="w-8 h-8" />
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 border-2 border-[#198F65] rounded-full animate-pulse shadow-sm"></div>
-              </div>
-              <div>
-                <div className="flex items-center space-x-2">
-                  <p className="font-black text-lg uppercase tracking-widest">Mark</p>
-                  <span className="flex items-center text-[10px] font-black bg-green-400/20 text-green-300 px-2 py-1 rounded-full uppercase tracking-tighter">Online</span>
-                </div>
-                <p className="text-xs font-bold opacity-80 uppercase tracking-widest">Local Reputation Guide</p>
-              </div>
-            </div>
-            <button onClick={() => setIsOpen(false)} className="hover:rotate-90 transition-transform relative z-10 p-2 bg-white/10 rounded-full">
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/50 scroll-smooth">
-            {messages.map((m, i) => (
-              <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                <div className={`max-w-[88%] p-5 rounded-2xl text-base font-semibold leading-relaxed shadow-sm ${m.role === 'user' ? 'bg-[#198F65] text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100/50'}`}>
-                  {m.text}
-                </div>
-              </div>
-            ))}
-
-            {!leadInfo && (
-              <div className="p-8 bg-white border border-green-100 rounded-[2.5rem] shadow-xl animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
-                <div className="text-center mb-8">
-                  <div className="w-14 h-14 bg-green-50 text-[#198F65] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
-                    <ShieldCheck className="w-7 h-7" />
-                  </div>
-                  <h4 className="text-xl font-black text-gray-900 tracking-tight">Protect Your Local Biz</h4>
-                  <p className="text-sm text-gray-400 font-bold mt-1 uppercase tracking-wide">Chat with Mark about your reputation.</p>
-                </div>
-                <form onSubmit={handleLeadSubmit} className="space-y-5">
-                  <div className="relative group">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-[#198F65] transition-colors" />
-                    <input
-                      type="text"
-                      required
-                      placeholder="Your First Name"
-                      className="w-full pl-12 pr-4 py-5 bg-gray-50 border border-gray-100 rounded-2xl text-base font-bold focus:bg-white focus:ring-4 focus:ring-green-100/50 focus:border-[#198F65] outline-none transition-all shadow-inner"
-                      value={leadForm.name}
-                      onChange={e => setLeadForm(prev => ({ ...prev, name: e.target.value }))}
-                    />
-                  </div>
-                  <div className="relative group">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-[#198F65] transition-colors" />
-                    <input
-                      type="email"
-                      required
-                      placeholder="Business Email"
-                      className="w-full pl-12 pr-4 py-5 bg-gray-50 border border-gray-100 rounded-2xl text-base font-bold focus:bg-white focus:ring-4 focus:ring-green-100/50 focus:border-[#198F65] outline-none transition-all shadow-inner"
-                      value={leadForm.email}
-                      onChange={e => setLeadForm(prev => ({ ...prev, email: e.target.value }))}
-                    />
-                  </div>
-                  <button type="submit" className="w-full bg-[#198F65] text-white font-black py-6 rounded-2xl hover:bg-[#147250] transition-all uppercase tracking-[0.2em] text-xs flex items-center justify-center shadow-2xl shadow-[#198F65]/30 group">
-                    Start Chat <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </form>
-              </div>
-            )}
-
-            {isLoading && (
-              <div className="flex justify-start animate-in fade-in duration-300">
-                <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-3">
-                  <div className="flex space-x-1.5">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                    <div className="w-2 h-2 bg-green-600 rounded-full animate-bounce [animation-delay:0.4s]"></div>
-                  </div>
-                  <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Mark is typing...</span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {leadInfo && (
-            <div className="p-6 bg-white border-t border-gray-100 flex items-center space-x-3">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="How can I help your business?"
-                className="flex-1 bg-gray-50 border-none rounded-2xl px-6 py-5 text-base font-semibold focus:ring-4 focus:ring-green-100/50 outline-none transition-all"
-              />
-              <button onClick={handleSend} className="bg-[#198F65] text-white p-5 rounded-2xl hover:bg-[#147250] transition-all shadow-xl hover:scale-105 active:scale-95 group">
-                <Send className="w-6 h-6 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`bg-[#198F65] text-white p-5 md:p-6 rounded-[2.2rem] shadow-[0_20px_50px_-10px_rgba(25,143,101,0.6)] hover:scale-110 active:scale-95 transition-all duration-500 relative group flex items-center space-x-4 ${isOpen ? 'rotate-0' : ''}`}
-      >
-        <div className="relative">
-          {isOpen ? <X className="w-8 h-8 md:w-9 md:h-9" /> : <MessageSquare className="w-8 h-8 md:w-9 md:h-9" />}
-          {!isOpen && <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 border-2 border-[#198F65] rounded-full animate-pulse"></div>}
-        </div>
-        {!isOpen && (
-          <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 whitespace-nowrap font-black uppercase text-sm tracking-widest px-0 group-hover:px-2">
-            Reputation Specialist
-          </span>
-        )}
-      </button>
-    </div>
-  );
-};
-
-// --- Redirect Gate Modal ---
-const RedirectLeadModal: React.FC<{ isOpen: boolean, onClose: () => void, onSuccess: () => void }> = ({ isOpen, onClose, onSuccess }) => {
-  const [email, setEmail] = useState('');
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-gray-950/98 backdrop-blur-2xl flex items-center justify-center z-[110] p-4 animate-in fade-in duration-500" onClick={onClose}>
-      <div className="relative bg-white rounded-[3rem] shadow-2xl p-12 md:p-16 max-w-2xl w-full transform transition-all animate-in zoom-in-95 slide-in-from-bottom-20 duration-500 ease-out" onClick={e => e.stopPropagation()}>
-        <button onClick={onClose} className="absolute top-8 right-8 text-gray-300 hover:text-gray-900 transition-all">
-          <X className="w-10 h-10" />
-        </button>
-        <div className="text-center">
-          <div className="bg-green-50 text-[#198F65] w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-10 shadow-inner">
-            <ShieldCheck className="w-12 h-12" />
-          </div>
-          <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tighter">Secure Your Reputation</h2>
-          <p className="text-xl text-gray-500 mb-12 leading-relaxed font-semibold">
-            Enter your business email to unlock your local conversion boost and head over to Trustindex.
-          </p>
-          <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); submitLeadToBackend(email); onSuccess(); }}>
-            <div className="relative group">
-              <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-300 group-focus-within:text-[#198F65] transition-colors" />
-              <input
-                type="email"
-                placeholder="Business Email"
-                className="w-full pl-16 pr-8 py-6 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-[#198F65] outline-none font-bold text-gray-900 placeholder:text-gray-300 transition-all text-lg shadow-inner"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" className="w-full bg-[#198F65] text-white font-black py-6 rounded-2xl hover:bg-[#147250] shadow-xl transition-all uppercase tracking-[0.2em] text-base flex items-center justify-center group">
-              Unlock Reputation Tool <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </form>
-          <p className="mt-10 text-xs font-black text-gray-300 uppercase tracking-widest flex items-center justify-center">
-            <Clock className="w-5 h-5 mr-3" /> One more customer just checked your reviews.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
+// --- Lazy Loaded Components ---
+const TrustNotification = React.lazy(() => import('./components/TrustNotification'));
+const AIChatbot = React.lazy(() => import('./components/AIChatbot'));
+const LeadMagnetModal = React.lazy(() => import('./components/LeadMagnetModal'));
+const RedirectLeadModal = React.lazy(() => import('./components/RedirectLeadModal'));
 
 const App: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -427,7 +125,7 @@ const App: React.FC = () => {
 
           {/* Main Image Container */}
           <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden border-[8px] border-white ring-1 ring-gray-100 transform group-hover:translate-y-[-5px] transition-transform duration-700">
-            <img src={VIDEO_PLACEHOLDER_URL} alt="Reputation Dashboard" className="w-full opacity-100" />
+            <img src={VIDEO_PLACEHOLDER_URL} alt="Reputation Dashboard" className="w-full opacity-100" loading="eager" />
           </div>
 
           {/* Feature Card Below Image */}
@@ -680,7 +378,7 @@ const App: React.FC = () => {
         <div className="grid md:grid-cols-2 gap-24 items-center">
           <div className="relative">
             <div className="absolute -top-16 -left-16 w-80 h-80 bg-[#198F65]/10 rounded-full blur-[120px]"></div>
-            <img src={PROFILE_PIC_URL} alt="Mark Thompson" className="relative w-full rounded-3xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.2)] rotate-2 hover:rotate-0 transition-transform duration-700 ease-out" />
+            <img src={PROFILE_PIC_URL} alt="Mark Thompson" className="relative w-full rounded-3xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.2)] rotate-2 hover:rotate-0 transition-transform duration-700 ease-out" loading="lazy" />
             <div className="absolute -bottom-12 -right-12 bg-white p-10 rounded-3xl shadow-2xl border border-gray-100 max-w-sm hidden lg:block">
               <div className="flex mb-4">
                 {[...Array(5)].map((_, i) => <Star key={i} className="w-6 h-6 text-yellow-400 fill-current" />)}
@@ -778,29 +476,23 @@ const App: React.FC = () => {
         </div>
       </footer>
 
-      <TrustNotification />
-      <AIChatbot />
-
-      {/* --- Floating Bottom CTA --- */}
-      <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 z-40 transition-all duration-500 transform ${scrolled ? 'translate-y-0 opacity-100' : 'translate-y-24 opacity-0 pointer-events-none'}`}>
-        <PrimaryButton onClick={handleConversionClick} className="whitespace-nowrap shadow-2xl scale-95 md:scale-110 px-12">
-          Fix My Reputation Now
-        </PrimaryButton>
-      </div>
-
-      <LeadMagnetModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConversion={() => {
-          setIsLeadCaptured(true);
-          window.location.href = AFFILIATE_LINK;
-        }}
-      />
-      <RedirectLeadModal
-        isOpen={isRedirectModalOpen}
-        onClose={() => setIsRedirectModalOpen(false)}
-        onSuccess={onRedirectSuccess}
-      />
+      <Suspense fallback={null}>
+        <TrustNotification />
+        <AIChatbot />
+        <LeadMagnetModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConversion={() => {
+            setIsLeadCaptured(true);
+            window.location.href = AFFILIATE_LINK;
+          }}
+        />
+        <RedirectLeadModal
+          isOpen={isRedirectModalOpen}
+          onClose={() => setIsRedirectModalOpen(false)}
+          onSuccess={onRedirectSuccess}
+        />
+      </Suspense>
 
       <style>{`
         @keyframes marquee {
@@ -828,84 +520,6 @@ const App: React.FC = () => {
           animation: spin-slow 20s linear infinite;
         }
       `}</style>
-    </div>
-  );
-};
-
-// --- Lead Magnet Modal ---
-const LeadMagnetModal: React.FC<{ isOpen: boolean, onClose: () => void, onConversion: () => void }> = ({ isOpen, onClose, onConversion }) => {
-  const [submitted, setSubmitted] = useState(false);
-  const [email, setEmail] = useState('');
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-gray-950/98 backdrop-blur-2xl flex items-center justify-center z-[100] p-4 animate-in fade-in duration-500" onClick={onClose}>
-      <div className="relative bg-white rounded-3xl shadow-[0_100px_200px_-50px_rgba(0,0,0,0.8)] p-8 max-w-lg w-full transform transition-all animate-in zoom-in-95 slide-in-from-bottom-20 duration-500 ease-out" onClick={e => e.stopPropagation()}>
-        <button onClick={onClose} className="absolute top-6 right-6 text-gray-300 hover:text-gray-900 transition-all hover:rotate-90">
-          <X className="w-8 h-8" />
-        </button>
-
-        {!submitted ? (
-          <div className="text-center">
-            <div className="bg-green-50 text-[#198F65] w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-inner">
-              <Download className="w-10 h-10" />
-            </div>
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tighter leading-[1.1]">Wait! Your Local Biz is Leaking Cash.</h2>
-            <p className="text-lg text-gray-500 mb-8 leading-relaxed font-semibold px-2">
-              Grab the <span className="text-[#198F65] font-black">"Reputation Shield"</span>: 7 Spots on your site to place reviews for a <span className="text-gray-900 font-black underline">2X Sales Lift</span>.
-            </p>
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); submitLeadToBackend(email); setSubmitted(true); }}>
-              <div className="relative group">
-                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-300 group-focus-within:text-[#198F65] transition-colors" />
-                <input
-                  type="email"
-                  placeholder="Where should we send the PDF?"
-                  className="w-full pl-16 pr-8 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-[#198F65] outline-none font-bold text-gray-900 placeholder:text-gray-300 transition-all text-base shadow-inner"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <button type="submit" className="w-full bg-[#198F65] text-white font-black py-4 rounded-2xl hover:bg-[#147250] shadow-[0_20px_40px_-10px_rgba(25, 143, 101, 0.4)] transition-all uppercase tracking-[0.2em] text-lg flex items-center justify-center group">
-                Send My Guide
-                <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-2 transition-transform" />
-              </button>
-            </form>
-            <div className="mt-8 flex items-center justify-center space-x-6">
-              <div className="flex items-center text-xs font-black text-gray-400 uppercase tracking-widest">
-                <ShieldCheck className="w-4 h-4 mr-2 text-green-500" /> Local Biz Safe
-              </div>
-              <div className="w-1.5 h-1.5 bg-gray-200 rounded-full"></div>
-              <div className="flex items-center text-xs font-black text-gray-400 uppercase tracking-widest">
-                <Clock className="w-4 h-4 mr-2 text-green-500" /> Delivered Instantly
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-6 animate-in zoom-in-95 duration-500">
-            <div className="bg-green-100 text-green-600 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8">
-              <CheckCircle className="w-12 h-12 text-green-500" />
-            </div>
-            <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter uppercase leading-tight">ALMOST DONE!</h2>
-            <p className="text-lg text-gray-500 font-bold mb-8 px-4">
-              Your <span className="font-bold text-[#198F65]">Reputation Shield Guide</span> will be sent within 2 minutes.
-            </p>
-            <button
-              onClick={() => {
-                onConversion();
-              }}
-              className="w-full bg-[#198F65] text-white font-black py-5 rounded-2xl hover:bg-[#147250] shadow-xl transition-all uppercase tracking-[0.2em] text-xl flex items-center justify-center group"
-            >
-              INCREASE MY SALES NOW
-              <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-2 transition-transform" />
-            </button>
-            <div className="mt-8 flex items-center justify-center text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">
-              <ShieldCheck className="w-4 h-4 mr-2 text-green-500" /> ONE STEP AWAY FROM LOCAL DOMINANCE.
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 };

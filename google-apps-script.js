@@ -10,18 +10,34 @@ function doPost(e) {
     // Parse the incoming JSON data
     var data = JSON.parse(e.postData.contents);
     var email = data.email;
-    
+    var name = data.name || "";
+    var sheetName = data.sheetName || "";
+
     // Server-side validation
     if (!email || !validateEmail(email)) {
       return createJsonResponse("error", "Invalid or missing email address.");
     }
 
-    // Get the active sheet and append the email in the first column
-    // The requirement is strictly the first column.
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet;
+
+    // If sheetName is provided, use/create that sheet. Otherwise, use active sheet.
+    if (sheetName) {
+      sheet = spreadsheet.getSheetByName(sheetName);
+      if (!sheet) {
+        sheet = spreadsheet.insertSheet(sheetName);
+        // Add headers for new sheet
+        sheet.appendRow(["Email", "Name", "Timestamp"]);
+        sheet.getRange(1, 1, 1, 3).setFontWeight("bold");
+      }
+    } else {
+      sheet = spreadsheet.getActiveSheet();
+    }
+
     var timestamp = new Date();
-    
-    sheet.appendRow([email, timestamp]);
+
+    // Append data: Email (A), Name (B), Timestamp (C)
+    sheet.appendRow([email, name, timestamp]);
 
     return createJsonResponse("success", "Lead successfully saved to Google Sheets.");
   } catch (err) {
